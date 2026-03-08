@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/MartialM1nd/freefsm/internal/config"
 	"github.com/MartialM1nd/freefsm/internal/database"
@@ -75,16 +76,17 @@ func (h *Handler) render(w http.ResponseWriter, r *http.Request, name string, da
 		data = make(map[string]any)
 	}
 
-	// Add user to all templates
 	data["User"] = middleware.GetUser(r.Context())
 
-	// Check if HTMX request
 	if r.Header.Get("HX-Request") == "true" {
-		// Render partial only
 		h.templates.ExecuteTemplate(w, name, data)
 	} else {
-		// Render full page with layout
-		data["Content"] = name
+		var buf strings.Builder
+		if err := h.templates.ExecuteTemplate(&buf, name, data); err != nil {
+			h.errorResponse(w, 500, "Internal server error")
+			return
+		}
+		data["Content"] = buf.String()
 		h.templates.ExecuteTemplate(w, "layouts/base.html", data)
 	}
 }
