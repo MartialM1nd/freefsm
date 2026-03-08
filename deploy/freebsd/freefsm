@@ -26,11 +26,18 @@ freefsm_start()
 {
     if [ -f "${freefsm_config}" ]; then
         . "${freefsm_config}"
-        export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH LOG_PATH
+        export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH
+    fi
+
+    # Create log file if it doesn't exist
+    if [ ! -f /var/log/freefsm.log ]; then
+        touch /var/log/freefsm.log
+        chown ${freefsm_user}:${freefsm_user} /var/log/freefsm.log
+        chmod 644 /var/log/freefsm.log
     fi
 
     echo "Starting ${name}."
-    /usr/sbin/daemon -r -p ${pidfile} -u ${freefsm_user} ${command}
+    /usr/sbin/daemon -r -p ${pidfile} -u ${freefsm_user} ${command} >> /var/log/freefsm.log 2>&1
 }
 
 freefsm_stop()

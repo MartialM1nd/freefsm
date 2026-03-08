@@ -13,7 +13,6 @@ import (
 	"github.com/MartialM1nd/freefsm/internal/config"
 	"github.com/MartialM1nd/freefsm/internal/database"
 	"github.com/MartialM1nd/freefsm/internal/handlers"
-	"github.com/MartialM1nd/freefsm/internal/logger"
 	"github.com/MartialM1nd/freefsm/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
@@ -28,11 +27,6 @@ func main() {
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
-	}
-
-	// Initialize logger
-	if err := logger.Init(cfg.LogPath); err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
 	// Connect to database
@@ -124,23 +118,21 @@ func main() {
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		logger.Info("Starting server on :%s", cfg.Port)
+		log.Printf("Starting server on :%s", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Error("Server error: %v", err)
 			log.Fatalf("Server error: %v", err)
 		}
 	}()
 
 	<-done
-	logger.Info("Shutting down...")
+	log.Println("Shutting down...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Error("Shutdown error: %v", err)
 		log.Fatalf("Shutdown error: %v", err)
 	}
 
-	logger.Info("Server stopped")
+	log.Println("Server stopped")
 }
