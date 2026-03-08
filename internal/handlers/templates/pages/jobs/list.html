@@ -1,0 +1,37 @@
+{{define "pages/jobs/list.html"}}
+<header>
+    <h1>Jobs</h1>
+    <a href="/jobs/new" role="button">New Job</a>
+</header>
+
+{{if .Jobs}}
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Customer</th>
+            <th>Assigned To</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Scheduled</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Jobs}}
+        <tr>
+            <td><a href="/jobs/{{.ID}}">{{.Title}}</a></td>
+            <td>{{if .Customer}}{{.Customer.Name}}{{end}}</td>
+            <td>{{if .AssignedUser}}{{.AssignedUser.Name}}{{end}}</td>
+            <td><span class="badge {{statusClass .Status}}">{{.StatusLabel}}</span></td>
+            <td><span class="badge {{priorityClass .Priority}}">{{.PriorityLabel}}</span></td>
+            <td>{{if .ScheduledDate}}{{.ScheduledDate.Format "Jan 2"}}{{if .ScheduledTime}} {{.ScheduledTime}}{{end}}{{end}}</td>
+            <td><a href="/jobs/{{.ID}}/edit">Edit</a></td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No jobs yet. <a href="/jobs/new">Create your first job</a>.</p>
+{{end}}
+{{end}}

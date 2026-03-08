@@ -1,0 +1,56 @@
+{{define "pages/dashboard.html"}}
+<h1>Dashboard</h1>
+
+<div class="grid">
+    <article>
+        <header>Today's Schedule</header>
+        <p>{{.Today.Format "Monday, January 2, 2006"}}</p>
+        {{if .Jobs}}
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Job</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Jobs}}
+                <tr>
+                    <td>{{.ScheduledTime}}</td>
+                    <td><a href="/jobs/{{.ID}}">{{.Title}}</a></td>
+                    <td>{{if .Customer}}{{.Customer.Name}}{{end}}</td>
+                    <td><span class="badge {{statusClass .Status}}">{{.StatusLabel}}</span></td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+        {{else}}
+        <p>No jobs scheduled for today.</p>
+        {{end}}
+    </article>
+</div>
+
+<div class="grid">
+    <article>
+        <header>Jobs by Status</header>
+        <table>
+            <tbody>
+                <tr><td>New</td><td>{{index .StatusCounts "new"}}</td></tr>
+                <tr><td>In Transit</td><td>{{index .StatusCounts "in_transit"}}</td></tr>
+                <tr><td>In Progress</td><td>{{index .StatusCounts "in_progress"}}</td></tr>
+                <tr><td>Pending</td><td>{{index .StatusCounts "pending"}}</td></tr>
+                <tr><td>Scheduled Return</td><td>{{index .StatusCounts "scheduled_return"}}</td></tr>
+                <tr><td>Ready to Invoice</td><td>{{index .StatusCounts "ready_to_invoice"}}</td></tr>
+            </tbody>
+        </table>
+    </article>
+
+    <article>
+        <header>Quick Actions</header>
+        <p><a href="/jobs/new" role="button">New Job</a></p>
+        <p><a href="/customers/new" role="button" class="secondary">New Customer</a></p>
+    </article>
+</div>
+{{end}}

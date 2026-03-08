@@ -1,0 +1,23 @@
+{{define "partials/job_status.html"}}
+<div class="grid">
+    <div>
+        <strong>Status</strong>
+        <p><span class="badge {{statusClass .Job.Status}}">{{.Job.StatusLabel}}</span></p>
+    </div>
+    <div>
+        <strong>Priority</strong>
+        <p><span class="badge {{priorityClass .Job.Priority}}">{{.Job.PriorityLabel}}</span></p>
+    </div>
+</div>
+
+<form hx-put="/jobs/{{.Job.ID}}/status" hx-target="#job-status" hx-swap="innerHTML">
+    <div class="grid">
+        <select name="status">
+            {{range .Statuses}}
+            <option value="{{.Value}}" {{if eq .Value (printf "%s" $.Job.Status)}}selected{{end}}>{{.Label}}</option>
+            {{end}}
+        </select>
+        <button type="submit" class="secondary">Update Status</button>
+    </div>
+</form>
+{{end}}

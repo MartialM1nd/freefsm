@@ -1,0 +1,33 @@
+{{define "pages/customers/list.html"}}
+<header>
+    <h1>Customers</h1>
+    <a href="/customers/new" role="button">New Customer</a>
+</header>
+
+{{if .Customers}}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Customers}}
+        <tr>
+            <td><a href="/customers/{{.ID}}">{{.Name}}</a></td>
+            <td>{{.Email}}</td>
+            <td>{{.Phone}}</td>
+            <td>{{.City}}</td>
+            <td><a href="/customers/{{.ID}}/edit">Edit</a></td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No customers yet. <a href="/customers/new">Add your first customer</a>.</p>
+{{end}}
+{{end}}

@@ -1,0 +1,114 @@
+{{define "pages/jobs/form.html"}}
+<h1>{{.Title}}</h1>
+
+{{if .Error}}
+<p class="error">{{.Error}}</p>
+{{end}}
+
+<form method="POST" action="{{if .IsNew}}/jobs{{else}}/jobs/{{.Job.ID}}{{end}}"
+      hx-post="{{if .IsNew}}/jobs{{else}}/jobs/{{.Job.ID}}{{end}}"
+      hx-swap="none"
+      x-data="{ useCustomerAddress: {{.Job.UseCustomerAddress}} }">
+    {{if not .IsNew}}
+    <input type="hidden" name="_method" value="PUT">
+    {{end}}
+
+    <label for="title">Title *</label>
+    <input type="text" id="title" name="title" value="{{.Job.Title}}" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="3">{{.Job.Description}}</textarea>
+
+    <div class="grid">
+        <div>
+            <label for="customer_id">Customer</label>
+            <select id="customer_id" name="customer_id">
+                <option value="">-- Select Customer --</option>
+                {{range .Customers}}
+                <option value="{{.ID}}" {{if $.Job.CustomerID}}{{if eq .ID.String $.Job.CustomerID.String}}selected{{end}}{{end}}>{{.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+        <div>
+            <label for="assigned_to">Assign To</label>
+            <select id="assigned_to" name="assigned_to">
+                <option value="">-- Unassigned --</option>
+                {{range .Workers}}
+                <option value="{{.ID}}" {{if $.Job.AssignedTo}}{{if eq .ID.String $.Job.AssignedTo.String}}selected{{end}}{{end}}>{{.Name}}</option>
+                {{end}}
+            </select>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                {{range .Statuses}}
+                <option value="{{.Value}}" {{if eq .Value (printf "%s" $.Job.Status)}}selected{{end}}>{{.Label}}</option>
+                {{end}}
+            </select>
+        </div>
+        <div>
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+                {{range .Priorities}}
+                <option value="{{.Value}}" {{if eq .Value (printf "%s" $.Job.Priority)}}selected{{end}}>{{.Label}}</option>
+                {{end}}
+            </select>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <label for="scheduled_date">Scheduled Date</label>
+            <input type="date" id="scheduled_date" name="scheduled_date" 
+                   value="{{if .Job.ScheduledDate}}{{.Job.ScheduledDate.Format "2006-01-02"}}{{end}}">
+        </div>
+        <div>
+            <label for="scheduled_time">Scheduled Time</label>
+            <input type="time" id="scheduled_time" name="scheduled_time" value="{{.Job.ScheduledTime}}">
+        </div>
+        <div>
+            <label for="estimated_duration">Est. Duration (min)</label>
+            <input type="number" id="estimated_duration" name="estimated_duration" 
+                   value="{{if .Job.EstimatedDuration}}{{.Job.EstimatedDuration}}{{end}}" min="0">
+        </div>
+    </div>
+
+    <fieldset>
+        <legend>Location</legend>
+        <label>
+            <input type="checkbox" name="use_customer_address" 
+                   x-model="useCustomerAddress"
+                   {{if .Job.UseCustomerAddress}}checked{{end}}>
+            Use customer's address
+        </label>
+
+        <div x-show="!useCustomerAddress">
+            <label for="location_address">Address</label>
+            <input type="text" id="location_address" name="location_address" value="{{.Job.LocationAddress}}">
+
+            <div class="grid">
+                <div>
+                    <label for="location_city">City</label>
+                    <input type="text" id="location_city" name="location_city" value="{{.Job.LocationCity}}">
+                </div>
+                <div>
+                    <label for="location_state">State</label>
+                    <input type="text" id="location_state" name="location_state" value="{{.Job.LocationState}}">
+                </div>
+                <div>
+                    <label for="location_zip">ZIP</label>
+                    <input type="text" id="location_zip" name="location_zip" value="{{.Job.LocationZip}}">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="grid">
+        <button type="submit">{{if .IsNew}}Create Job{{else}}Save Changes{{end}}</button>
+        <a href="/jobs" role="button" class="secondary">Cancel</a>
+    </div>
+</form>
+{{end}}

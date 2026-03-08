@@ -1,0 +1,136 @@
+/* FreeFSM Custom Styles */
+
+/* Login page */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.login-container article {
+    max-width: 400px;
+    width: 100%;
+}
+
+.login-container header {
+    text-align: center;
+}
+
+/* Error messages */
+.error {
+    color: var(--pico-color-red-500);
+    background: var(--pico-color-red-50);
+    padding: var(--pico-spacing);
+    border-radius: var(--pico-border-radius);
+    margin-bottom: var(--pico-spacing);
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    font-size: 0.75em;
+    font-weight: 600;
+    border-radius: var(--pico-border-radius);
+    text-transform: uppercase;
+}
+
+.badge.primary {
+    background: var(--pico-primary-background);
+    color: var(--pico-primary-inverse);
+}
+
+.badge.secondary {
+    background: var(--pico-secondary-background);
+    color: var(--pico-secondary-inverse);
+}
+
+.badge.success {
+    background: #2e7d32;
+    color: white;
+}
+
+.badge.warning {
+    background: #f57c00;
+    color: white;
+}
+
+.badge.error {
+    background: #c62828;
+    color: white;
+}
+
+/* Header with actions */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--pico-spacing);
+}
+
+header h1 {
+    margin-bottom: 0;
+}
+
+header div {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Tables */
+table {
+    margin-bottom: var(--pico-spacing);
+}
+
+/* Forms */
+fieldset {
+    margin-bottom: var(--pico-spacing);
+}
+
+/* Navigation */
+nav {
+    background: var(--pico-card-background-color);
+    box-shadow: var(--pico-card-box-shadow);
+}
+
+nav ul {
+    margin: 0;
+}
+
+/* Footer */
+footer {
+    margin-top: var(--pico-spacing);
+    padding: var(--pico-spacing);
+    text-align: center;
+    color: var(--pico-muted-color);
+}
+
+/* Job notes */
+#job-notes ul {
+    list-style: none;
+    padding: 0;
+}
+
+#job-notes li {
+    padding: var(--pico-spacing);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+#job-notes li:last-child {
+    border-bottom: none;
+}
+
+#job-notes small {
+    color: var(--pico-muted-color);
+}
+
+/* HTMX loading indicator */
+.htmx-request {
+    opacity: 0.5;
+    transition: opacity 200ms ease-in;
+}
+
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}

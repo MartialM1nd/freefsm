@@ -1,0 +1,14 @@
+# FreeFSM Configuration
+# Copy to /usr/local/etc/freefsm.conf
+
+# Database connection (required)
+DATABASE_URL="postgres://freefsm:password@localhost:5432/freefsm?sslmode=disable"
+
+# Session secret - generate with: openssl rand -hex 32
+SESSION_SECRET="change-me-to-a-random-string"
+
+# HTTP port
+PORT="8080"
+
+# Environment: development or production
+ENV="production"

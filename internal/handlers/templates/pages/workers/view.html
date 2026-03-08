@@ -1,0 +1,54 @@
+{{define "pages/workers/view.html"}}
+<header>
+    <h1>{{.Worker.Name}}</h1>
+    <div>
+        <a href="/workers/{{.Worker.ID}}/edit" role="button" class="secondary">Edit</a>
+        <button class="outline secondary"
+                hx-delete="/workers/{{.Worker.ID}}"
+                hx-confirm="Are you sure you want to delete this worker?">Delete</button>
+    </div>
+</header>
+
+<article>
+    <div class="grid">
+        <div>
+            <strong>Email</strong>
+            <p><a href="mailto:{{.Worker.Email}}">{{.Worker.Email}}</a></p>
+        </div>
+        <div>
+            <strong>Phone</strong>
+            <p>{{if .Worker.Phone}}<a href="tel:{{.Worker.Phone}}">{{.Worker.Phone}}</a>{{else}}-{{end}}</p>
+        </div>
+        <div>
+            <strong>Role</strong>
+            <p>{{.Worker.Role}}</p>
+        </div>
+    </div>
+</article>
+
+{{if .Jobs}}
+<h2>Assigned Jobs</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Job</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Scheduled</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Jobs}}
+        <tr>
+            <td><a href="/jobs/{{.ID}}">{{.Title}}</a></td>
+            <td>{{if .Customer}}{{.Customer.Name}}{{end}}</td>
+            <td><span class="badge {{statusClass .Status}}">{{.StatusLabel}}</span></td>
+            <td>{{if .ScheduledDate}}{{.ScheduledDate.Format "Jan 2, 2006"}}{{end}}</td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{end}}
+
+<p><a href="/workers">&larr; Back to Workers</a></p>
+{{end}}

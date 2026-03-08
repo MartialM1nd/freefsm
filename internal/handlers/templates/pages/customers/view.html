@@ -1,0 +1,34 @@
+{{define "pages/customers/view.html"}}
+<header>
+    <h1>{{.Customer.Name}}</h1>
+    <div>
+        <a href="/customers/{{.Customer.ID}}/edit" role="button" class="secondary">Edit</a>
+        <button class="outline secondary"
+                hx-delete="/customers/{{.Customer.ID}}"
+                hx-confirm="Are you sure you want to delete this customer?">Delete</button>
+    </div>
+</header>
+
+<article>
+    <div class="grid">
+        <div>
+            <strong>Email</strong>
+            <p>{{if .Customer.Email}}<a href="mailto:{{.Customer.Email}}">{{.Customer.Email}}</a>{{else}}-{{end}}</p>
+        </div>
+        <div>
+            <strong>Phone</strong>
+            <p>{{if .Customer.Phone}}<a href="tel:{{.Customer.Phone}}">{{.Customer.Phone}}</a>{{else}}-{{end}}</p>
+        </div>
+    </div>
+
+    <strong>Address</strong>
+    <p>{{if .Customer.Address}}{{.Customer.FullAddress}}{{else}}-{{end}}</p>
+
+    {{if .Customer.Notes}}
+    <strong>Notes</strong>
+    <p>{{.Customer.Notes}}</p>
+    {{end}}
+</article>
+
+<p><a href="/customers">&larr; Back to Customers</a></p>
+{{end}}

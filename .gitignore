@@ -1,0 +1,14 @@
+# Binary (root level only)
+/freefsm
+
+# Environment
+.env
+
+# Editor
+*.swp
+*~
+.idea/
+.vscode/
+
+# OS
+.DS_Store

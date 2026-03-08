@@ -1,0 +1,33 @@
+{{define "pages/workers/list.html"}}
+<header>
+    <h1>Workers</h1>
+    <a href="/workers/new" role="button">New Worker</a>
+</header>
+
+{{if .Workers}}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Workers}}
+        <tr>
+            <td><a href="/workers/{{.ID}}">{{.Name}}</a></td>
+            <td>{{.Email}}</td>
+            <td>{{.Phone}}</td>
+            <td>{{.Role}}</td>
+            <td><a href="/workers/{{.ID}}/edit">Edit</a></td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No workers yet. <a href="/workers/new">Add your first worker</a>.</p>
+{{end}}
+{{end}}

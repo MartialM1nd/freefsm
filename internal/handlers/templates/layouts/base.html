@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{if .Title}}{{.Title}} - {{end}}FreeFSM</title>
+    <link rel="stylesheet" href="/static/css/pico.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <script src="/static/js/htmx.min.js"></script>
+    <script src="/static/js/alpine.min.js" defer></script>
+</head>
+<body hx-boost="true">
+    {{if .User}}
+    <nav class="container-fluid">
+        <ul>
+            <li><a href="/" class="contrast"><strong>FreeFSM</strong></a></li>
+        </ul>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/jobs">Jobs</a></li>
+            <li><a href="/customers">Customers</a></li>
+            <li><a href="/workers">Workers</a></li>
+        </ul>
+        <ul>
+            <li>{{.User.Name}}</li>
+            <li>
+                <form action="/logout" method="POST" style="margin:0">
+                    <button type="submit" class="outline secondary">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+    {{end}}
+
+    <main class="container">
+        {{template .Content .}}
+    </main>
+
+    <footer class="container">
+        <small>FreeFSM - Field Service Management</small>
+    </footer>
+</body>
+</html>
