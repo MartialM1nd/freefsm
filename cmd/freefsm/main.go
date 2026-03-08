@@ -56,7 +56,7 @@ func main() {
 	r.Use(chimw.Timeout(60 * time.Second))
 
 	// Static files
-	fileServer := http.FileServer(http.Dir("ui/static"))
+	fileServer := http.FileServer(http.Dir(cfg.StaticPath))
 	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
 
 	// Initialize handlers

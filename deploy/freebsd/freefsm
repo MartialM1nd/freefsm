@@ -12,7 +12,7 @@ rcvar="freefsm_enable"
 load_rc_config $name
 
 : ${freefsm_enable:="NO"}
-: ${freefsm_user:="www"}
+: ${freefsm_user:="freefsm"}
 : ${freefsm_config:="/usr/local/etc/freefsm.conf"}
 
 command="/usr/local/bin/freefsm"
@@ -26,7 +26,7 @@ freefsm_start()
 {
     if [ -f "${freefsm_config}" ]; then
         . "${freefsm_config}"
-        export DATABASE_URL SESSION_SECRET PORT ENV
+        export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH
     fi
 
     echo "Starting ${name}."

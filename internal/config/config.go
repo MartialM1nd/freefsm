@@ -10,6 +10,7 @@ type Config struct {
 	SessionSecret string
 	Port          string
 	Env           string
+	StaticPath    string
 }
 
 func Load() (*Config, error) {
@@ -18,6 +19,7 @@ func Load() (*Config, error) {
 		SessionSecret: os.Getenv("SESSION_SECRET"),
 		Port:          os.Getenv("PORT"),
 		Env:           os.Getenv("ENV"),
+		StaticPath:    os.Getenv("STATIC_PATH"),
 	}
 
 	// Defaults
@@ -26,6 +28,9 @@ func Load() (*Config, error) {
 	}
 	if cfg.Env == "" {
 		cfg.Env = "development"
+	}
+	if cfg.StaticPath == "" {
+		cfg.StaticPath = "ui/static"
 	}
 
 	// Required fields

@@ -12,3 +12,6 @@ PORT="8080"
 
 # Environment: development or production
 ENV="production"
+
+# Static files path
+STATIC_PATH="/usr/local/share/freefsm/static"
