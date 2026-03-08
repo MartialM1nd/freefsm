@@ -26,11 +26,11 @@ freefsm_start()
 {
     if [ -f "${freefsm_config}" ]; then
         . "${freefsm_config}"
-        export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH
+        export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH LOG_PATH
     fi
 
     echo "Starting ${name}."
-    /usr/sbin/daemon -p ${pidfile} -u ${freefsm_user} ${command}
+    /usr/sbin/daemon -r -p ${pidfile} -u ${freefsm_user} ${command}
 }
 
 freefsm_stop()

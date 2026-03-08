@@ -1,34 +1,20 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - FreeFSM</title>
-    <link rel="stylesheet" href="/static/css/pico.min.css">
-    <link rel="stylesheet" href="/static/css/custom.css">
-</head>
-<body class="container">
-    <main class="login-container">
-        <article>
-            <header>
-                <h1>FreeFSM</h1>
-                <p>Field Service Management</p>
-            </header>
+<article>
+    <header>
+        <h1>FreeFSM</h1>
+        <p>Field Service Management</p>
+    </header>
 
-            {{if .Error}}
-            <p class="error">{{.Error}}</p>
-            {{end}}
+    {{if .Error}}
+    <p class="error">{{.Error}}</p>
+    {{end}}
 
-            <form method="POST" action="/login">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="{{.Email}}" required autofocus>
+    <form method="POST" action="/login">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{.Email}}" required autofocus>
 
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
 
-                <button type="submit">Login</button>
-            </form>
-        </article>
-    </main>
-</body>
-</html>
+        <button type="submit">Login</button>
+    </form>
+</article>

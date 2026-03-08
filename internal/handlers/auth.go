@@ -6,7 +6,6 @@ import (
 )
 
 func (h *Handler) LoginPage(w http.ResponseWriter, r *http.Request) {
-	// Check if already logged in
 	if cookie, err := r.Cookie("session"); err == nil {
 		if session, _ := h.userRepo.GetSession(r.Context(), cookie.Value); session != nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -14,7 +13,7 @@ func (h *Handler) LoginPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.templates.ExecuteTemplate(w, "pages/login.html", nil)
+	h.render(w, r, "pages/login.html", nil)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {

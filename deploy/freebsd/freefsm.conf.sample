@@ -15,3 +15,6 @@ ENV="production"
 
 # Static files path
 STATIC_PATH="/usr/local/share/freefsm/static"
+
+# Log file path (default: /var/log/freefsm.log)
+LOG_PATH="/var/log/freefsm.log"

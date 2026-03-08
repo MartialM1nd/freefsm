@@ -11,6 +11,7 @@ type Config struct {
 	Port          string
 	Env           string
 	StaticPath    string
+	LogPath       string
 }
 
 func Load() (*Config, error) {
@@ -20,6 +21,7 @@ func Load() (*Config, error) {
 		Port:          os.Getenv("PORT"),
 		Env:           os.Getenv("ENV"),
 		StaticPath:    os.Getenv("STATIC_PATH"),
+		LogPath:       os.Getenv("LOG_PATH"),
 	}
 
 	// Defaults
@@ -31,6 +33,9 @@ func Load() (*Config, error) {
 	}
 	if cfg.StaticPath == "" {
 		cfg.StaticPath = "ui/static"
+	}
+	if cfg.LogPath == "" {
+		cfg.LogPath = "/var/log/freefsm.log"
 	}
 
 	// Required fields
