@@ -10,12 +10,14 @@ name="freefsm"
 rcvar="freefsm_enable"
 
 command="/usr/local/bin/freefsm"
+command_args="-log /var/log/freefsm.log"
 pidfile="/var/run/${name}.pid"
 required_files="${command}"
+start_precmd="${name}_prestart"
 
 freefsm_config="/usr/local/etc/freefsm.conf"
 
-freefsm_start()
+freefsm_prestart()
 {
     if [ -f "${freefsm_config}" ]; then
         . "${freefsm_config}"
@@ -27,8 +29,6 @@ freefsm_start()
         chown freefsm:freefsm /var/log/freefsm.log
         chmod 644 /var/log/freefsm.log
     fi
-
-    export freefsm_flags="-log /var/log/freefsm.log"
 }
 
 load_rc_config $name
