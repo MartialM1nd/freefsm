@@ -37,7 +37,7 @@ freefsm_start()
     fi
 
     echo "Starting ${name}."
-    /usr/sbin/daemon -r -p ${pidfile} -u ${freefsm_user} ${command} >> /var/log/freefsm.log 2>&1
+    /usr/sbin/daemon -p ${pidfile} -u ${freefsm_user} ${command} >> /var/log/freefsm.log 2>&1
 }
 
 freefsm_stop()
