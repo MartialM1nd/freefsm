@@ -9,10 +9,10 @@
 name="freefsm"
 rcvar="freefsm_enable"
 
-command="/usr/local/bin/freefsm"
-command_args="-log /var/log/freefsm.log"
+command="/usr/sbin/daemon"
+procname="/usr/local/bin/freefsm"
 pidfile="/var/run/${name}.pid"
-required_files="${command}"
+required_files="${procname}"
 start_precmd="${name}_prestart"
 
 freefsm_config="/usr/local/etc/freefsm.conf"
@@ -29,7 +29,13 @@ freefsm_prestart()
         chown freefsm:freefsm /var/log/freefsm.log
         chmod 644 /var/log/freefsm.log
     fi
+
+    command_args="-p ${pidfile} -u ${freefsm_user} ${procname} -log /var/log/freefsm.log"
 }
 
 load_rc_config $name
+
+: ${freefsm_enable:="NO"}
+: ${freefsm_user:="freefsm"}
+
 run_rc_command "$1"
