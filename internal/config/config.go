@@ -11,6 +11,7 @@ type Config struct {
 	Port          string
 	Env           string
 	StaticPath    string
+	SetupToken    string
 }
 
 func Load() (*Config, error) {
@@ -20,6 +21,7 @@ func Load() (*Config, error) {
 		Port:          os.Getenv("PORT"),
 		Env:           os.Getenv("ENV"),
 		StaticPath:    os.Getenv("STATIC_PATH"),
+		SetupToken:    os.Getenv("SETUP_TOKEN"),
 	}
 
 	// Defaults

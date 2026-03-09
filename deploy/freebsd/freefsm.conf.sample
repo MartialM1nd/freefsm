@@ -15,3 +15,6 @@ ENV="production"
 
 # Static files path
 STATIC_PATH="/usr/local/share/freefsm/static"
+
+# Setup token for initial admin registration (leave empty to disable)
+SETUP_TOKEN=""

@@ -63,6 +63,8 @@ func main() {
 	h := handlers.New(db, cfg)
 
 	// Public routes
+	r.Get("/register", h.RegisterPage)
+	r.Post("/register", h.Register)
 	r.Get("/login", h.LoginPage)
 	r.Post("/login", h.Login)
 	r.Post("/logout", h.Logout)

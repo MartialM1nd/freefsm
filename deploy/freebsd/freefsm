@@ -26,7 +26,7 @@ freefsm_start()
 {
     if [ -f "${freefsm_config}" ]; then
         . "${freefsm_config}"
-        export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH
+        export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH SETUP_TOKEN
     fi
 
     # Create log file if it doesn't exist

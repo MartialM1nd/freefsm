@@ -189,3 +189,11 @@ func (r *UserRepo) CleanExpiredSessions(ctx context.Context) error {
 	_, err := r.db.Pool.Exec(ctx, `DELETE FROM sessions WHERE expires_at < NOW()`)
 	return err
 }
+
+func (r *UserRepo) AdminExists(ctx context.Context) (bool, error) {
+	var exists bool
+	err := r.db.Pool.QueryRow(ctx, `
+		SELECT EXISTS(SELECT 1 FROM users WHERE role = 'admin' AND deleted_at IS NULL)
+	`).Scan(&exists)
+	return exists, err
+}
