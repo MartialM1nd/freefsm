@@ -1,11 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{if .Title}}{{.Title}} - {{end}}FreeFSM</title>
     <link rel="stylesheet" href="/static/css/pico.min.css">
     <link rel="stylesheet" href="/static/css/custom.css">
+    <script>
+        // Set theme before page renders to prevent flash
+        (function() {
+            var theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <script src="/static/js/htmx.min.js"></script>
     <script src="/static/js/alpine.min.js" defer></script>
 </head>
@@ -22,6 +29,18 @@
             <li><a href="/workers">Workers</a></li>
         </ul>
         <ul>
+            <li x-data="{ 
+                theme: localStorage.getItem('theme') || 'light',
+                toggle() {
+                    this.theme = this.theme === 'light' ? 'dark' : 'light';
+                    localStorage.setItem('theme', this.theme);
+                    document.documentElement.setAttribute('data-theme', this.theme);
+                }
+            }" 
+            @click="toggle()"
+            x-init="document.documentElement.setAttribute('data-theme', theme)">
+                <button type="button" class="theme-toggle" x-text="theme === 'light' ? '☾' : '☀'" aria-label="Toggle theme"></button>
+            </li>
             <li>{{.User.Name}}</li>
             <li>
                 <form action="/logout" method="POST" style="margin:0">

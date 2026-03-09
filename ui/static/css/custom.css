@@ -134,3 +134,28 @@ footer {
 .htmx-request.htmx-indicator {
     opacity: 1;
 }
+
+/* Theme toggle button */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--pico-muted-border-color);
+    color: var(--pico-primary-color);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    line-height: 1;
+    border-radius: var(--pico-border-radius);
+    min-width: 2.5rem;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.theme-toggle:hover {
+    background: var(--pico-primary-background);
+    border-color: var(--pico-primary-background);
+    color: var(--pico-primary-inverse);
+}
+
+.theme-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--pico-primary-background);
+}
