@@ -11,7 +11,7 @@ rcvar="freefsm_enable"
 
 command="/usr/sbin/daemon"
 procname="/usr/local/bin/freefsm"
-pidfile="/var/run/${name}.pid"
+pidfile="/var/run/${name}/${name}.pid"
 required_files="${procname}"
 start_precmd="${name}_prestart"
 
@@ -29,6 +29,12 @@ freefsm_prestart()
         chown freefsm:freefsm /var/log/freefsm.log
         chmod 644 /var/log/freefsm.log
     fi
+
+    if [ ! -d "/var/run/${name}" ]; then
+        mkdir -p "/var/run/${name}"
+    fi
+    chown ${freefsm_user}:${freefsm_user} "/var/run/${name}"
+    chmod 755 "/var/run/${name}"
 
     command_args="-p ${pidfile} -u ${freefsm_user} ${procname} -log /var/log/freefsm.log"
 }
