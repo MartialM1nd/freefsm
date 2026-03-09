@@ -21,19 +21,7 @@ import (
 func main() {
 	// Flags
 	migrateFlag := flag.Bool("migrate", false, "Run database migrations and exit")
-	logPath := flag.String("log", "", "Log file path")
 	flag.Parse()
-
-	// Handle -log flag for FreeBSD rc.d
-	if *logPath != "" {
-		f, err := os.OpenFile(*logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-		if err != nil {
-			log.Fatalf("Failed to open log file: %v", err)
-		}
-		defer f.Close()
-		log.SetOutput(f)
-		log.SetFlags(log.LstdFlags)
-	}
 
 	// Load config
 	cfg, err := config.Load()

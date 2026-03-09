@@ -9,39 +9,66 @@
 name="freefsm"
 rcvar="freefsm_enable"
 
-command="/usr/sbin/daemon"
-procname="/usr/local/bin/freefsm"
+command="/usr/local/bin/freefsm"
 pidfile="/var/run/${name}/${name}.pid"
-required_files="${procname}"
-start_precmd="${name}_prestart"
+required_files="${command}"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+status_cmd="${name}_status"
 
 freefsm_config="/usr/local/etc/freefsm.conf"
 
-freefsm_prestart()
+load_rc_config $name
+
+: ${freefsm_enable:="NO"}
+: ${freefsm_user:="freefsm"}
+
+freefsm_start()
 {
     if [ -f "${freefsm_config}" ]; then
         . "${freefsm_config}"
         export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH SETUP_TOKEN
     fi
 
-    if [ ! -f /var/log/freefsm.log ]; then
-        touch /var/log/freefsm.log
-        chown freefsm:freefsm /var/log/freefsm.log
-        chmod 644 /var/log/freefsm.log
-    fi
-
     if [ ! -d "/var/run/${name}" ]; then
         mkdir -p "/var/run/${name}"
     fi
     chown ${freefsm_user}:${freefsm_user} "/var/run/${name}"
-    chmod 755 "/var/run/${name}"
 
-    command_args="-p ${pidfile} -u ${freefsm_user} ${procname} -log /var/log/freefsm.log"
+    if [ ! -f /var/log/freefsm.log ]; then
+        touch /var/log/freefsm.log
+        chown ${freefsm_user}:${freefsm_user} /var/log/freefsm.log
+        chmod 644 /var/log/freefsm.log
+    fi
+
+    echo "Starting ${name}."
+    /usr/sbin/daemon -f -p ${pidfile} -o /var/log/freefsm.log \
+        su -m ${freefsm_user} -c "${command}"
 }
 
-load_rc_config $name
+freefsm_stop()
+{
+    if [ -f "${pidfile}" ]; then
+        echo "Stopping ${name}."
+        kill -TERM $(cat ${pidfile})
+        rm -f ${pidfile}
+    else
+        echo "${name} is not running."
+    fi
+}
 
-: ${freefsm_enable:="NO"}
-: ${freefsm_user:="freefsm"}
+freefsm_status()
+{
+    if [ -f "${pidfile}" ]; then
+        if kill -0 $(cat ${pidfile}) 2>/dev/null; then
+            echo "${name} is running as pid $(cat ${pidfile})."
+        else
+            echo "${name} is not running (stale pidfile)."
+        fi
+    else
+        echo "${name} is not running."
+    fi
+}
 
 run_rc_command "$1"
