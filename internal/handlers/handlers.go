@@ -4,6 +4,8 @@ import (
 	"embed"
 	"html/template"
 	"io"
+	"io/fs"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -66,9 +68,29 @@ func (h *Handler) loadTemplates() {
 		},
 	}
 
-	h.templates = template.Must(
-		template.New("").Funcs(funcMap).ParseFS(templatesFS, "templates/**/*.html"),
-	)
+	h.templates = template.New("").Funcs(funcMap)
+
+	// Walk embedded templates and register with stripped prefix
+	fs.WalkDir(templatesFS, "templates", func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() || !strings.HasSuffix(path, ".html") {
+			return err
+		}
+
+		// Strip "templates/" prefix for cleaner template names
+		name := strings.TrimPrefix(path, "templates/")
+
+		content, err := templatesFS.ReadFile(path)
+		if err != nil {
+			log.Fatalf("Failed to read template %s: %v", path, err)
+		}
+
+		_, err = h.templates.New(name).Parse(string(content))
+		if err != nil {
+			log.Fatalf("Failed to parse template %s: %v", name, err)
+		}
+
+		return nil
+	})
 }
 
 func (h *Handler) render(w http.ResponseWriter, r *http.Request, name string, data map[string]any) {
@@ -79,15 +101,22 @@ func (h *Handler) render(w http.ResponseWriter, r *http.Request, name string, da
 	data["User"] = middleware.GetUser(r.Context())
 
 	if r.Header.Get("HX-Request") == "true" {
-		h.templates.ExecuteTemplate(w, name, data)
+		if err := h.templates.ExecuteTemplate(w, name, data); err != nil {
+			log.Printf("Template error (partial %s): %v", name, err)
+			h.errorResponse(w, 500, "Internal server error")
+		}
 	} else {
 		var buf strings.Builder
 		if err := h.templates.ExecuteTemplate(&buf, name, data); err != nil {
+			log.Printf("Template error (content %s): %v", name, err)
 			h.errorResponse(w, 500, "Internal server error")
 			return
 		}
-		data["Content"] = buf.String()
-		h.templates.ExecuteTemplate(w, "layouts/base.html", data)
+		data["Content"] = template.HTML(buf.String())
+		if err := h.templates.ExecuteTemplate(w, "layouts/base.html", data); err != nil {
+			log.Printf("Template error (layout): %v", err)
+			h.errorResponse(w, 500, "Internal server error")
+		}
 	}
 }
 
