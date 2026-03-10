@@ -6,6 +6,8 @@
     <title>{{if .Title}}{{.Title}} - {{end}}FreeFSM</title>
     <link rel="stylesheet" href="/static/css/pico.min.css">
     <link rel="stylesheet" href="/static/css/custom.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/@alpinejs/collapse" defer></script>
     <script>
         // Set theme before page renders to prevent flash
         (function() {
@@ -16,47 +18,228 @@
     <script src="/static/js/htmx.min.js"></script>
     <script src="/static/js/alpine.min.js" defer></script>
 </head>
-<body>
+<body x-data="sidebar()" @resize.window="onResize()">
     {{if .User}}
-    <nav class="container-fluid">
-        <ul>
-            <li><a href="/" class="contrast"><strong>FreeFSM</strong></a></li>
-        </ul>
-        <ul>
-            <li><a href="/">Dashboard</a></li>
-            <li><a href="/jobs">Jobs</a></li>
-            <li><a href="/customers">Customers</a></li>
-            <li><a href="/workers">Workers</a></li>
-        </ul>
-        <ul>
-            <li x-data="{ 
-                theme: localStorage.getItem('theme') || 'light',
-                toggle() {
-                    this.theme = this.theme === 'light' ? 'dark' : 'light';
-                    localStorage.setItem('theme', this.theme);
-                    document.documentElement.setAttribute('data-theme', this.theme);
-                }
-            }" 
-            @click="toggle()"
-            x-init="document.documentElement.setAttribute('data-theme', theme)">
-                <button type="button" class="theme-toggle" x-text="theme === 'light' ? '☾' : '☀'" aria-label="Toggle theme"></button>
-            </li>
-            <li>{{.User.Name}}</li>
-            <li>
+    <!-- Sidebar -->
+    <aside 
+        class="sidebar" 
+        :class="{ 
+            'sidebar-open': isOpen, 
+            'sidebar-collapsed': isCollapsed && isOpen,
+            'sidebar-mobile': isMobile 
+        }"
+    >
+        <div class="sidebar-header">
+            <button 
+                class="sidebar-toggle" 
+                @click="toggle()"
+                :aria-label="isOpen ? 'Close sidebar' : 'Open sidebar'"
+            >
+                <i :class="isOpen ? 'ph ph-x' : 'ph ph-list'"></i>
+            </button>
+            <span class="sidebar-title" x-show="isOpen && !isCollapsed">FreeFSM</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item" :class="{ 'active': '{{.Path}}' === '/' }">
+                <i class="ph ph-gauge"></i>
+                <span x-show="isOpen && !isCollapsed">Dashboard</span>
+            </a>
+
+            <a href="/customers" class="nav-item" :class="{ 'active': '{{.Path}}' === '/customers' }">
+                <i class="ph ph-users-three"></i>
+                <span x-show="isOpen && !isCollapsed">Customers</span>
+            </a>
+
+            <a href="/schedule" class="nav-item" :class="{ 'active': '{{.Path}}' === '/schedule' }">
+                <i class="ph ph-calendar"></i>
+                <span x-show="isOpen && !isCollapsed">Schedule</span>
+            </a>
+
+            <!-- Work Section (expandable) -->
+            <div class="nav-section">
+                <button 
+                    class="nav-item nav-item-toggle" 
+                    @click="toggleSection('work')"
+                    :class="{ 'active': '{{.Path}}' === '/jobs' }"
+                >
+                    <i class="ph ph-briefcase"></i>
+                    <span x-show="isOpen && !isCollapsed">Work</span>
+                    <i 
+                        class="ph" 
+                        :class="sections.work ? 'ph-caret-up' : 'ph-caret-down'"
+                        x-show="isOpen && !isCollapsed"
+                    ></i>
+                </button>
+                <div class="nav-submenu" x-show="sections.work && isOpen && !isCollapsed" x-collapse>
+                    <a href="/jobs" class="nav-subitem">Work Orders</a>
+                </div>
+            </div>
+
+            <!-- Sales Section (expandable) -->
+            <div class="nav-section">
+                <button 
+                    class="nav-item nav-item-toggle" 
+                    @click="toggleSection('sales')"
+                >
+                    <i class="ph ph-currency-dollar"></i>
+                    <span x-show="isOpen && !isCollapsed">Sales</span>
+                    <i 
+                        class="ph" 
+                        :class="sections.sales ? 'ph-caret-up' : 'ph-caret-down'"
+                        x-show="isOpen && !isCollapsed"
+                    ></i>
+                </button>
+                <div class="nav-submenu" x-show="sections.sales && isOpen && !isCollapsed" x-collapse>
+                    <a href="/quotes" class="nav-subitem">Quotes</a>
+                    <a href="/invoices" class="nav-subitem">Invoices</a>
+                </div>
+            </div>
+
+            <!-- Management Section (expandable) -->
+            <div class="nav-section">
+                <button 
+                    class="nav-item nav-item-toggle" 
+                    @click="toggleSection('management')"
+                    :class="{ 'active': '{{.Path}}' === '/workers' }"
+                >
+                    <i class="ph ph-user-gear"></i>
+                    <span x-show="isOpen && !isCollapsed">Management</span>
+                    <i 
+                        class="ph" 
+                        :class="sections.management ? 'ph-caret-up' : 'ph-caret-down'"
+                        x-show="isOpen && !isCollapsed"
+                    ></i>
+                </button>
+                <div class="nav-submenu" x-show="sections.management && isOpen && !isCollapsed" x-collapse>
+                    <a href="/workers" class="nav-subitem">Team Members</a>
+                </div>
+            </div>
+
+            <a href="/settings" class="nav-item" :class="{ 'active': '{{.Path}}' === '/settings' }">
+                <i class="ph ph-gear"></i>
+                <span x-show="isOpen && !isCollapsed">Settings</span>
+            </a>
+        </nav>
+
+        <!-- Sidebar footer with collapse toggle -->
+        <div class="sidebar-footer" x-show="isOpen && !isMobile">
+            <button class="nav-item" @click="toggleCollapse()" title="Collapse to icons">
+                <i class="ph" :class="isCollapsed ? 'ph-caret-right' : 'ph-caret-left'"></i>
+                <span x-show="!isCollapsed">Collapse</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div 
+        class="sidebar-overlay" 
+        x-show="isOpen && isMobile" 
+        @click="isOpen = false"
+    ></div>
+
+    <!-- Main content -->
+    <div 
+        class="main-wrapper"
+        :class="{ 
+            'main-shift': isOpen && !isMobile,
+            'main-shift-collapsed': isOpen && isCollapsed && !isMobile
+        }"
+    >
+        <!-- Top bar -->
+        <header class="top-bar">
+            <button class="menu-toggle" @click="toggle()">
+                <i class="ph ph-list"></i>
+            </button>
+            
+            <div class="top-bar-spacer"></div>
+
+            <div class="top-bar-actions">
+                <div 
+                    x-data="{ 
+                        theme: localStorage.getItem('theme') || 'light',
+                        toggle() {
+                            this.theme = this.theme === 'light' ? 'dark' : 'light';
+                            localStorage.setItem('theme', this.theme);
+                            document.documentElement.setAttribute('data-theme', this.theme);
+                        }
+                    }" 
+                    @click="toggle()"
+                    x-init="document.documentElement.setAttribute('data-theme', theme)"
+                >
+                    <button type="button" class="theme-toggle" x-text="theme === 'light' ? '☾' : '☀'" aria-label="Toggle theme"></button>
+                </div>
+                <span class="user-name">{{.User.Name}}</span>
                 <form action="/logout" method="POST" style="margin:0">
                     <button type="submit" class="outline secondary">Logout</button>
                 </form>
-            </li>
-        </ul>
-    </nav>
+            </div>
+        </header>
+
+        <main class="container">
+            {{.Content}}
+        </main>
+
+        <footer class="container">
+            <small>FreeFSM - Field Service Management</small>
+        </footer>
+    </div>
+
+    <script>
+        function sidebar() {
+            return {
+                isOpen: false,
+                isCollapsed: false,
+                isMobile: false,
+                sections: {
+                    work: false,
+                    sales: false,
+                    management: false
+                },
+                
+                init() {
+                    this.onResize();
+                    // Auto-open current section if on child page
+                    const path = '{{.Path}}';
+                    if (path === '/jobs') {
+                        this.sections.work = true;
+                    } else if (path === '/workers') {
+                        this.sections.management = true;
+                    }
+                    // Open sidebar by default on desktop
+                    if (!this.isMobile) {
+                        this.isOpen = true;
+                    }
+                },
+
+                onResize() {
+                    this.isMobile = window.innerWidth <= 768;
+                    if (this.isMobile) {
+                        this.isOpen = false;
+                        this.isCollapsed = false;
+                    }
+                },
+
+                toggle() {
+                    this.isOpen = !this.isOpen;
+                },
+
+                toggleCollapse() {
+                    this.isCollapsed = !this.isCollapsed;
+                },
+
+                toggleSection(name) {
+                    this.sections[name] = !this.sections[name];
+                }
+            }
+        }
+    </script>
     {{end}}
 
+    {{if not .User}}
     <main class="container">
         {{.Content}}
     </main>
-
-    <footer class="container">
-        <small>FreeFSM - Field Service Management</small>
-    </footer>
+    {{end}}
 </body>
 </html>

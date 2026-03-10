@@ -99,6 +99,7 @@ func (h *Handler) render(w http.ResponseWriter, r *http.Request, name string, da
 	}
 
 	data["User"] = middleware.GetUser(r.Context())
+	data["Path"] = r.URL.Path
 
 	if r.Header.Get("HX-Request") == "true" {
 		if err := h.templates.ExecuteTemplate(w, name, data); err != nil {
