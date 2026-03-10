@@ -1,5 +1,10 @@
 /* FreeFSM Custom Styles */
 
+/* Reduce all text by 15% */
+html {
+    font-size: 0.85rem;
+}
+
 /* Login page */
 .login-container {
     display: flex;
@@ -213,6 +218,97 @@ footer {
     overflow: hidden;
 }
 
+/* New Sidebar Header - Shallow header */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--sidebar-border);
+    min-height: 50px;
+    background: var(--sidebar-bg);
+}
+
+.header-left {
+    flex: 1;
+}
+
+.header-page-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--pico-primary-color);
+    text-decoration: none;
+}
+
+.header-page-name:hover {
+    text-decoration: underline;
+}
+
+.header-right {
+    position: relative;
+}
+
+.user-menu-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: none;
+    color: var(--sidebar-text);
+    cursor: pointer;
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--pico-border-radius);
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.user-menu-trigger:hover {
+    background: var(--pico-muted-background-color);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.25rem;
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--sidebar-border);
+    border-radius: var(--pico-border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+    z-index: 1001;
+    overflow: hidden;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.85rem;
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background: var(--pico-muted-background-color);
+}
+
+.dropdown-form {
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-form .dropdown-item {
+    width: 100%;
+    text-align: left;
+}
+
 /* Sidebar navigation */
 .sidebar-nav {
     flex: 1;
@@ -305,7 +401,9 @@ footer {
 
 .sidebar-collapsed .sidebar-title,
 .sidebar-collapsed .nav-item span,
-.sidebar-collapsed .nav-submenu {
+.sidebar-collapsed .nav-submenu,
+.sidebar-collapsed .header-left,
+.sidebar-collapsed .header-right {
     display: none;
 }
 
@@ -316,6 +414,7 @@ footer {
 
 .sidebar-collapsed .sidebar-header {
     justify-content: center;
+    padding: 0.75rem 0.25rem;
 }
 
 /* Mobile overlay */

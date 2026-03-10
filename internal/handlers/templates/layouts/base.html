@@ -29,15 +29,29 @@
             'sidebar-mobile': isMobile 
         }"
     >
+        <!-- Shallow Header -->
         <div class="sidebar-header">
-            <button 
-                class="sidebar-toggle" 
-                @click="toggle()"
-                :aria-label="isOpen ? 'Close sidebar' : 'Open sidebar'"
-            >
-                <i :class="isOpen ? 'ph ph-x' : 'ph ph-list'"></i>
-            </button>
-            <span class="sidebar-title" x-show="isOpen && !isCollapsed">FreeFSM</span>
+            <div class="header-left">
+                <a :href="currentPageUrl" class="header-page-name" x-text="currentPageName"></a>
+            </div>
+            <div class="header-right" x-data="{ open: false }">
+                <button class="user-menu-trigger" @click="open = !open" @click.outside="open = false">
+                    <span class="user-menu-name">{{.User.Name}}</span>
+                    <i class="ph ph-caret-down"></i>
+                </button>
+                <div class="user-dropdown" x-show="open" x-transition>
+                    <a href="/settings" class="dropdown-item">
+                        <i class="ph ph-user"></i>
+                        Profile Settings
+                    </a>
+                    <form action="/logout" method="POST" class="dropdown-form">
+                        <button type="submit" class="dropdown-item">
+                            <i class="ph ph-sign-out"></i>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <nav class="sidebar-nav">
@@ -191,6 +205,8 @@
                 isOpen: false,
                 isCollapsed: false,
                 isMobile: false,
+                currentPageName: 'Dashboard',
+                currentPageUrl: '/',
                 sections: {
                     work: false,
                     sales: false,
@@ -201,6 +217,7 @@
                     this.onResize();
                     // Auto-open current section if on child page
                     const path = '{{.Path}}';
+                    this.updateCurrentPage(path);
                     if (path === '/jobs') {
                         this.sections.work = true;
                     } else if (path === '/workers') {
@@ -210,6 +227,21 @@
                     if (!this.isMobile) {
                         this.isOpen = true;
                     }
+                },
+
+                updateCurrentPage(path) {
+                    const pages = {
+                        '/': 'Dashboard',
+                        '/customers': 'Customers',
+                        '/schedule': 'Schedule',
+                        '/jobs': 'Work Orders',
+                        '/quotes': 'Quotes',
+                        '/invoices': 'Invoices',
+                        '/workers': 'Team Members',
+                        '/settings': 'Settings'
+                    };
+                    this.currentPageName = pages[path] || 'Dashboard';
+                    this.currentPageUrl = path === '/jobs' ? '/jobs' : (path === '/workers' ? '/workers' : path);
                 },
 
                 onResize() {
