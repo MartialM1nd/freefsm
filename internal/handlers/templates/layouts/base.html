@@ -25,49 +25,28 @@
         class="sidebar" 
         :class="{ 
             'sidebar-open': isOpen, 
-            'sidebar-collapsed': isCollapsed && isOpen,
-            'sidebar-mobile': isMobile 
+            'sidebar-collapsed': isCollapsed
         }"
     >
-        <!-- Shallow Header -->
-        <div class="sidebar-header">
-            <div class="header-left">
-                <a :href="currentPageUrl" class="header-page-name" x-text="currentPageName"></a>
-            </div>
-            <div class="header-right" x-data="{ open: false }">
-                <button class="user-menu-trigger" @click="open = !open" @click.outside="open = false">
-                    <span class="user-menu-name">{{.User.Name}}</span>
-                    <i class="ph ph-caret-down"></i>
-                </button>
-                <div class="user-dropdown" x-show="open" x-transition>
-                    <a href="/settings" class="dropdown-item">
-                        <i class="ph ph-user"></i>
-                        Profile Settings
-                    </a>
-                    <form action="/logout" method="POST" class="dropdown-form">
-                        <button type="submit" class="dropdown-item">
-                            <i class="ph ph-sign-out"></i>
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <!-- Sidebar hamburger (mobile only) -->
+        <button class="sidebar-hamburger" @click="toggle()" x-show="isMobile">
+            <i class="ph" :class="isOpen ? 'ph-x' : 'ph-list'"></i>
+        </button>
 
         <nav class="sidebar-nav">
             <a href="/" class="nav-item" :class="{ 'active': '{{.Path}}' === '/' }">
                 <i class="ph ph-gauge"></i>
-                <span x-show="isOpen && !isCollapsed">Dashboard</span>
+                <span>Dashboard</span>
             </a>
 
             <a href="/customers" class="nav-item" :class="{ 'active': '{{.Path}}' === '/customers' }">
                 <i class="ph ph-users-three"></i>
-                <span x-show="isOpen && !isCollapsed">Customers</span>
+                <span>Customers</span>
             </a>
 
             <a href="/schedule" class="nav-item" :class="{ 'active': '{{.Path}}' === '/schedule' }">
                 <i class="ph ph-calendar"></i>
-                <span x-show="isOpen && !isCollapsed">Schedule</span>
+                <span>Schedule</span>
             </a>
 
             <!-- Work Section (expandable) -->
@@ -78,14 +57,10 @@
                     :class="{ 'active': '{{.Path}}' === '/jobs' }"
                 >
                     <i class="ph ph-briefcase"></i>
-                    <span x-show="isOpen && !isCollapsed">Work</span>
-                    <i 
-                        class="ph" 
-                        :class="sections.work ? 'ph-caret-up' : 'ph-caret-down'"
-                        x-show="isOpen && !isCollapsed"
-                    ></i>
+                    <span>Work</span>
+                    <i class="ph" :class="sections.work ? 'ph-caret-up' : 'ph-caret-down'"></i>
                 </button>
-                <div class="nav-submenu" x-show="sections.work && isOpen && !isCollapsed" x-collapse>
+                <div class="nav-submenu" x-show="sections.work" x-collapse>
                     <a href="/jobs" class="nav-subitem">Work Orders</a>
                 </div>
             </div>
@@ -97,14 +72,10 @@
                     @click="toggleSection('sales')"
                 >
                     <i class="ph ph-currency-dollar"></i>
-                    <span x-show="isOpen && !isCollapsed">Sales</span>
-                    <i 
-                        class="ph" 
-                        :class="sections.sales ? 'ph-caret-up' : 'ph-caret-down'"
-                        x-show="isOpen && !isCollapsed"
-                    ></i>
+                    <span>Sales</span>
+                    <i class="ph" :class="sections.sales ? 'ph-caret-up' : 'ph-caret-down'"></i>
                 </button>
-                <div class="nav-submenu" x-show="sections.sales && isOpen && !isCollapsed" x-collapse>
+                <div class="nav-submenu" x-show="sections.sales" x-collapse>
                     <a href="/quotes" class="nav-subitem">Quotes</a>
                     <a href="/invoices" class="nav-subitem">Invoices</a>
                 </div>
@@ -118,27 +89,23 @@
                     :class="{ 'active': '{{.Path}}' === '/workers' }"
                 >
                     <i class="ph ph-user-gear"></i>
-                    <span x-show="isOpen && !isCollapsed">Management</span>
-                    <i 
-                        class="ph" 
-                        :class="sections.management ? 'ph-caret-up' : 'ph-caret-down'"
-                        x-show="isOpen && !isCollapsed"
-                    ></i>
+                    <span>Management</span>
+                    <i class="ph" :class="sections.management ? 'ph-caret-up' : 'ph-caret-down'"></i>
                 </button>
-                <div class="nav-submenu" x-show="sections.management && isOpen && !isCollapsed" x-collapse>
+                <div class="nav-submenu" x-show="sections.management" x-collapse>
                     <a href="/workers" class="nav-subitem">Team Members</a>
                 </div>
             </div>
 
             <a href="/settings" class="nav-item" :class="{ 'active': '{{.Path}}' === '/settings' }">
                 <i class="ph ph-gear"></i>
-                <span x-show="isOpen && !isCollapsed">Settings</span>
+                <span>Settings</span>
             </a>
         </nav>
 
         <!-- Sidebar footer with collapse toggle -->
-        <div class="sidebar-footer" x-show="isOpen && !isMobile">
-            <button class="nav-item" @click="toggleCollapse()" title="Collapse to icons">
+        <div class="sidebar-footer">
+            <button class="nav-item" @click="toggleCollapse()" title="Toggle between icons and full width">
                 <i class="ph" :class="isCollapsed ? 'ph-caret-right' : 'ph-caret-left'"></i>
                 <span x-show="!isCollapsed">Collapse</span>
             </button>
@@ -156,19 +123,15 @@
     <div 
         class="main-wrapper"
         :class="{ 
-            'main-shift': isOpen && !isMobile,
-            'main-shift-collapsed': isOpen && isCollapsed && !isMobile
+            'main-shift-collapsed': isCollapsed
         }"
     >
-        <!-- Top bar -->
-        <header class="top-bar">
-            <button class="menu-toggle" @click="toggle()">
-                <i class="ph ph-list"></i>
-            </button>
-            
-            <div class="top-bar-spacer"></div>
-
-            <div class="top-bar-actions">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="top-header-left">
+                <a :href="currentPageUrl" class="header-page-link" x-text="currentPageName"></a>
+            </div>
+            <div class="top-header-right">
                 <div 
                     x-data="{ 
                         theme: localStorage.getItem('theme') || 'light',
@@ -183,10 +146,24 @@
                 >
                     <button type="button" class="theme-toggle" x-text="theme === 'light' ? '☾' : '☀'" aria-label="Toggle theme"></button>
                 </div>
-                <span class="user-name">{{.User.Name}}</span>
-                <form action="/logout" method="POST" style="margin:0">
-                    <button type="submit" class="outline secondary">Logout</button>
-                </form>
+                <div class="user-menu" x-data="{ open: false }">
+                    <button class="user-menu-trigger" @click="open = !open" @click.outside="open = false">
+                        <span>{{.User.Name}}</span>
+                        <i class="ph ph-caret-down"></i>
+                    </button>
+                    <div class="user-dropdown" x-show="open" x-transition>
+                        <a href="/settings" class="dropdown-item">
+                            <i class="ph ph-user"></i>
+                            Profile Settings
+                        </a>
+                        <form action="/logout" method="POST" class="dropdown-form">
+                            <button type="submit" class="dropdown-item">
+                                <i class="ph ph-sign-out"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -215,17 +192,12 @@
                 
                 init() {
                     this.onResize();
-                    // Auto-open current section if on child page
                     const path = '{{.Path}}';
                     this.updateCurrentPage(path);
                     if (path === '/jobs') {
                         this.sections.work = true;
                     } else if (path === '/workers') {
                         this.sections.management = true;
-                    }
-                    // Open sidebar by default on desktop
-                    if (!this.isMobile) {
-                        this.isOpen = true;
                     }
                 },
 
@@ -248,7 +220,9 @@
                     this.isMobile = window.innerWidth <= 768;
                     if (this.isMobile) {
                         this.isOpen = false;
-                        this.isCollapsed = false;
+                        this.isCollapsed = true;
+                    } else {
+                        this.isOpen = true;
                     }
                 },
 
