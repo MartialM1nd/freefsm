@@ -9,21 +9,22 @@
 name="freefsm"
 rcvar="freefsm_enable"
 
-command="/usr/sbin/daemon"
-procname="freefsm"
+command="/usr/local/bin/freefsm"
 pidfile="/var/run/${name}/${name}.pid"
-required_files="/usr/local/bin/freefsm"
-freefsm_user="freefsm"
+required_files="${command}"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+status_cmd="${name}_status"
 
 freefsm_config="/usr/local/etc/freefsm.conf"
 
 load_rc_config $name
 
 : ${freefsm_enable:="NO"}
+: ${freefsm_user:="freefsm"}
 
-start_precmd="${name}_prestart"
-
-freefsm_prestart()
+freefsm_start()
 {
 	if [ -f "${freefsm_config}" ]; then
 		. "${freefsm_config}"
@@ -41,7 +42,35 @@ freefsm_prestart()
 		chmod 644 /var/log/freefsm.log
 	fi
 
-	command_args="-p ${pidfile} -u ${freefsm_user} -o /var/log/freefsm.log /usr/local/bin/freefsm"
+	echo "Starting ${name}."
+	/usr/sbin/daemon -f -p ${pidfile} -o /var/log/freefsm.log \
+		su -m ${freefsm_user} -c "${command}"
+}
+
+freefsm_stop()
+{
+	if [ -f "${pidfile}" ]; then
+		echo "Stopping ${name}."
+		pid=$(cat ${pidfile})
+		kill -TERM ${pid}
+		wait_for_pids ${pid}
+		rm -f ${pidfile}
+	else
+		echo "${name} is not running."
+	fi
+}
+
+freefsm_status()
+{
+	if [ -f "${pidfile}" ]; then
+		if kill -0 $(cat ${pidfile}) 2>/dev/null; then
+			echo "${name} is running as pid $(cat ${pidfile})."
+		else
+			echo "${name} is not running (stale pidfile)."
+		fi
+	else
+		echo "${name} is not running."
+	fi
 }
 
 run_rc_command "$1"
