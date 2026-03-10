@@ -8,69 +8,89 @@
 
 name="freefsm"
 rcvar="freefsm_enable"
+freefsm_user="freefsm"
 
+start_cmd="freefsm_start"
+status_cmd="freefsm_status"
+stop_cmd="freefsm_stop"
+stop_postcmd="freefsm_wait"
 command="/usr/local/bin/freefsm"
-pidfile="/var/run/${name}/${name}.pid"
-required_files="${command}"
-
-start_cmd="${name}_start"
-stop_cmd="${name}_stop"
-status_cmd="${name}_status"
-
-freefsm_config="/usr/local/etc/freefsm.conf"
+daemon_command="/usr/sbin/daemon"
+pidfile="/var/run/${name}.pid"
 
 load_rc_config $name
+: ${freefsm_enable:=no}
 
-: ${freefsm_enable:="NO"}
-: ${freefsm_user:="freefsm"}
+: ${freefsm_config:="/usr/local/etc/freefsm.conf"}
+
+# set up dependant variables
+procname="${command}"
+required_files="${freefsm_config}"
+
+freefsm_status()
+{
+  local pid
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "FreeFSM is not running"
+    return 1
+  else
+    echo "FreeFSM running, pid: ${pid}"
+  fi
+}
 
 freefsm_start()
 {
-	if [ -f "${freefsm_config}" ]; then
-		. "${freefsm_config}"
-		export DATABASE_URL SESSION_SECRET PORT ENV STATIC_PATH SETUP_TOKEN
-	fi
-
-	if [ ! -d "/var/run/${name}" ]; then
-		mkdir -p "/var/run/${name}"
-	fi
-	chown ${freefsm_user}:${freefsm_user} "/var/run/${name}"
-
-	if [ ! -f /var/log/freefsm.log ]; then
-		touch /var/log/freefsm.log
-		chown ${freefsm_user}:${freefsm_user} /var/log/freefsm.log
-		chmod 644 /var/log/freefsm.log
-	fi
-
-	echo "Starting ${name}."
-	/usr/sbin/daemon -f -p ${pidfile} -o /var/log/freefsm.log \
-		su -m ${freefsm_user} -c "${command}"
+  echo "Starting freefsm:"
+  ${daemon_command} -u "${freefsm_user}" -p "${pidfile}" -o /var/log/freefsm.log \
+    ${command} \
+    --config="${freefsm_config}"
 }
 
 freefsm_stop()
 {
-	if [ -f "${pidfile}" ]; then
-		echo "Stopping ${name}."
-		pid=$(cat ${pidfile})
-		kill -TERM ${pid}
-		wait_for_pids ${pid}
-		rm -f ${pidfile}
-	else
-		echo "${name} is not running."
-	fi
+  echo "Stopping FreeFSM:"
+  pid=$(check_pidfile "${pidfile}" "${procname}")
+  if [ -z "${pid}" ]
+  then
+    echo "FreeFSM is not running"
+    return 1
+  else
+    kill ${pid}
+  fi
 }
 
-freefsm_status()
+freefsm_wait()
 {
-	if [ -f "${pidfile}" ]; then
-		if kill -0 $(cat ${pidfile}) 2>/dev/null; then
-			echo "${name} is running as pid $(cat ${pidfile})."
-		else
-			echo "${name} is not running (stale pidfile)."
-		fi
-	else
-		echo "${name} is not running."
-	fi
+  local n=60
+  echo "Waiting for FreeFSM shutdown:"
+  while :
+  do
+    printf '.'
+    pid=$(check_pidfile "${pidfile}" "${procname}")
+    if [ -z "${pid}" ]
+    then
+      printf '\n'
+      break
+    fi
+    sleep 1
+    n=$((${n} - 1))
+    if [ ${n} -eq 0 -a -f "${pidfile}" ]
+    then
+      printf "\nForce shutdown"
+      kill -9 $(cat "${pidfile}")
+      for n in 1 2 3
+      do
+        printf '.'
+        sleep 1
+      done
+      printf '\n'
+      break
+    fi
+  done
+  rm -f "${pidfile}"
+  echo "Shutdown complete"
 }
 
 run_rc_command "$1"

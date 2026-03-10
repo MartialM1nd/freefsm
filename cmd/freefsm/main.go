@@ -21,10 +21,12 @@ import (
 func main() {
 	// Flags
 	migrateFlag := flag.Bool("migrate", false, "Run database migrations and exit")
+	configFile := flag.String("config", "", "Path to config file")
+	flag.StringVar(configFile, "c", "", "Path to config file (shorthand)")
 	flag.Parse()
 
 	// Load config
-	cfg, err := config.Load()
+	cfg, err := config.Load(*configFile)
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
