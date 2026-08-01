@@ -28,9 +28,10 @@ gmake checksum
 
 ## Setup
 
-After first start, visit `/setup` on your server and enter the `SETUP_TOKEN`
-from your config to create the first admin account. After that, remove the
-token from the config and restart.
+After first start, visit `/setup` on your server and enter the
+`FREEFSM_SETUP_TOKEN` from your config to create the first admin account. The
+token is required at every startup, so retain it in the config and protect it
+like a secret. It is accepted for setup only while no users exist.
 
 ## Linux (systemd)
 
